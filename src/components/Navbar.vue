@@ -3,18 +3,29 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">My Vue</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li v-for="(page,index) in pages" class="nav-item" :key="index">
                     <navbar-link
+                    v-for="(page,index) in publishedPages" class="nav-item" :key="index"
                     :page="page"
-                    :isActive="activePage == index"
-                    @click.prevent="navLinkClick(index)">
+                    :index="index">
                     </navbar-link>
-                </li>
+
+
+                    <li>
+                        <router-link 
+                            to="/pages"
+                            class="nav-link" 
+                            active-class="active"
+                            aria-current="page" 
+                            >Pages
+                        </router-link >
+                    </li>
+
+
             </ul>
             <form class="d-flex">
                 <button
                 class="btn btn-primary"
-                @click.prevent="changeTheme"
+                @click.prevent="changeTheme()"
                 >Toggle Navbar</button>
             </form>
         </div>
@@ -24,16 +35,24 @@
 <script>
 import NavbarLink from './NavbarLink.vue';
 export default{
+    computed:{
+        publishedPages(){
+            return this.pages.filter(p => p.published)
+        } 
+    },
+    inject: ['$pages'],
     components: {
         NavbarLink,
     },
     created(){
         this.getThemeSetting();
+
+        this.pages = this.$pages.getAllPages();
     },
-    props: ['pages','activePage','navLinkClick'],
     data(){
         return{
             theme: 'dark',
+            pages: [],
         }
     },
     methods: {
@@ -56,7 +75,6 @@ export default{
                 this.theme = theme;
             }
         }
-
     }
 }
 </script>
